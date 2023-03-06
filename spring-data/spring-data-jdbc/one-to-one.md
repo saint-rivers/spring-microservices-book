@@ -3,7 +3,9 @@
 [Spring Data JDBC](./getting-started.md)
 
 ## Objective
+
 - create a one-to-one mapping between a movie and a movie rental
+
 - meaning the movie entity will have a one-to-one relationship with a rental entity
 
 ## Creating the Entity
@@ -43,18 +45,6 @@ public class Rental {
 
 Notice that there is no ID property in the class and no property annotated with `@Id`. This is because Spring Data JDBC tries to adhere more to Domain-Driven-Design concepts. More on that at ...
 
-Now, we can add a `List<Rental>` to our Movie entity. Spring Data JDBC will be able to identify that the Rental entity needs to be mapped as one-to-one.
 
-```java
-@Data
-@AllArgsConstructor
-public class Movie {
-    @Id
-    private Long id;
-    private String title;
-    private String description;
-    private List<Rental> rentals = new ArrayList<>();
-}
-```
 
 ## Usage
