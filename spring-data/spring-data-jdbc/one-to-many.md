@@ -62,9 +62,12 @@ public class MovieAppRunner implements CommandLineRunner {
 }
 ```
 
+> IDK what's happening here
+
 Our movie and rental information is persisted, however, this setup presents a performance issue. If we enable logging by enabling the configuration below:
 
 ```properties
+logging.level.org.springframework.jdbc.core=DEBUG
 ```
 
 we can see that whenever we update our Rental information, all children of the movie gets deleted and reinserted. This is not ideal.
@@ -105,3 +108,33 @@ public class Movie {
 ```
 
 Again, we do not need to change anything in the `Rental` class.
+
+## Under Construction
+
+```text
+Executing SQL update and returning generated keys
+Executing prepared SQL statement [INSERT INTO "movie" ("description", "title") VALUES (?, ?)]
+Executing SQL batch update [INSERT INTO "rental" ("duration", "movie", "movie_key", "price") VALUES (?, ?, ?, ?)]
+Executing prepared SQL statement [INSERT INTO "rental" ("duration", "movie", "movie_key", "price") VALUES (?, ?, ?, ?)]
+
+Executing prepared SQL update
+Executing prepared SQL statement [UPDATE "movie" SET "title" = ?, "description" = ? WHERE "movie"."id" = ?]
+Executing prepared SQL update
+Executing prepared SQL statement [DELETE FROM "rental" WHERE "rental"."movie" = ?]
+Executing SQL batch update [INSERT INTO "rental" ("duration", "movie", "movie_key", "price") VALUES (?, ?, ?, ?)]
+Executing prepared SQL statement [INSERT INTO "rental" ("duration", "movie", "movie_key", "price") VALUES (?, ?, ?, ?)]
+```
+
+Spring Data provides a CrudRepository which simplifies and speeds up development time. However, it is clear from the logs above that it does not handle updating as efficiently as we would like.
+
+But why is Spring Data handling it this way?
+
+Simplicity. Spring Data aims to provide a simple implementation of our database and, currently, this is the only way this is handled by Spring Data.
+
+To circumvent this implementation, we can use the JdbcTemplate to run a custom update statement.
+
+Read more at [JdbcTemplate](./jdbc-template.md)
+
+## Reference
+
+[Explanation of Spring Data implementation](https://stackoverflow.com/questions/72503705/spring-data-jdbc-deletes-all-entries-and-inserts-them-again)
