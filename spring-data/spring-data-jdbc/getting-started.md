@@ -105,7 +105,7 @@ even if their names do not match. The `@Column` achieves the same purpose,
 but for mapping table columns to class properties.
 
 > It should be noted that, by default, Spring Data JDBC will map postgres identifiers in snake_case to Java in
-> PascalCase.
+> PascalCase for classes and camelCase for properties.
 
 ```java
 import lombok.AllArgsConstructor;
@@ -142,7 +142,7 @@ public interface MovieRepository extends CrudRepository<Movie, Long> {
 }
 ```
 
-In order to persist data to the database table, use the created repository.
+Below is an implementation and how to persist data using the created CrudRepository.
 
 ```java
 
