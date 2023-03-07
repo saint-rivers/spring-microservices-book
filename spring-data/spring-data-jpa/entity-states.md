@@ -26,6 +26,18 @@ Any changes made to detached objects are no longer automatically propagated to t
 
 ## Reference
 
+Overview:
+
 https://jstobigdata.com/jpa/different-states-of-an-object-in-jpa
 
 https://javarevisited.blogspot.com/2017/04/difference-between-transient-persistent-and-detached-state-hibernate-java.html
+
+Understanding Persist vs. Merge: 
+
+https://www.baeldung.com/spring-data-crud-repository-save
+
+https://stackoverflow.com/questions/1069992/jpa-entitymanager-why-use-persist-over-merge
+
+Detecting an entity's state:
+
+https://thorben-janssen.com/spring-data-jpa-state-detection/
