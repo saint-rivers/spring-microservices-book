@@ -285,6 +285,10 @@ public class Student {
 
 It is also useful to note that Hibernate will create indexes automatically at startup after generating the table, based on the unique keys present (from primary keys and unique keys).
 
+## Next
+
+[Next Article](./entity-manager.md)
+
 ## References
 
 Primary Key Generation https://thorben-janssen.com/jpa-generate-primary-keys/
