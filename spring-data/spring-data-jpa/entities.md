@@ -17,8 +17,8 @@ CREATE TABLE students
     id        bigint NOT NULL PRIMARY KEy,
     age       smallint,
     email     text   NOT NULL,
-    firstname text   NOT NULL,
-    lastname  text   NOT NULL,
+    first_name text   NOT NULL,
+    last_name  text   NOT NULL,
 
     CONSTRAINT unique_email UNIQUE(email),
 );
@@ -33,8 +33,8 @@ public class Student {
    @Id
    @GeneratedValue
    private Long id;
-   private String firstname;
-   private String lastname;
+   private String firstName;
+   private String lastName;
    private String email;
    private Integer age;
 }
@@ -70,7 +70,7 @@ If needed, the developer can map the column names to the properties manually if 
 private Long id;
 
 @Column(name = "first_name")
-private String firstname;
+private String firstName;
 ```
 
 Even though it's not strictly necessary, it is still best practice to explicitly declare the column names, even if they are exactly the same. This will help make the codebase more verbose and will eliminate any uncertainty during development and maintenance.
@@ -85,11 +85,11 @@ public class Student {
    @Column(name = "student_id")
    private Long id;
 
-   @Column(name = "firstname")
-   private String firstname;
+   @Column(name = "first_name")
+   private String firstName;
 
-   @Column(name = "lastname")
-   private String lastname;
+   @Column(name = "last_name")
+   private String lastName;
 
    @Column(name = "email")
    private String email;
@@ -267,7 +267,7 @@ Here, a unique constraint is created using the `@UniqueConstraint` annotation.
 
 ```java
 @Table(
-    name = "students",
+    name = "student",
     uniqueConstraints = {
        @UniqueConstraint(
             columnNames = "email",
@@ -286,6 +286,38 @@ public class Student {
 It is also useful to note that Hibernate will create indexes automatically at startup after generating the table, based on the unique keys present (from primary keys and unique keys).
 
 ## Next
+
+Note the entity below, which will be referenced again in further sections of the book. 
+Several lombok annotations have been added for ease of development.
+
+```java
+@Entity
+@Table(name = "student")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@ToString
+public class Student {
+
+   @Id
+   @GeneratedValue
+   @Column(name = "student_id")
+   private Long id;
+
+   @Column(name = "first_name")
+   private String firstName;
+
+   @Column(name = "last_name")
+   private String lastName;
+
+   @Column(name = "email")
+   private String email;
+
+   @Column(name = "age")
+   private Integer age;
+}
+```
 
 [Next Article](./entity-manager.md)
 
