@@ -44,43 +44,25 @@ Student student = new Student();
 An instance of an entity (or simply a object) in the "persistent" state represents a record in the table.
 A transient entity state can be changed to "persistent" by using the `persist()` method of the EntityManager.
 
-This method is created inside the `StudentRepository` class.
-
 ```java
-public void persistEntity(){
-    EntityTransaction transaction = entityManager.getTransaction(); // explained later
-    transaction.begin(); // explained later
+EntityTransaction transaction = entityManager.getTransaction(); // explained later
+transaction.begin(); // explained later
 
-    // creating a transient entity
-    Student student = new Student(null, "first", "second", "example@gamil.com", 22);
+Student student = new Student(null, "first", "second", "example@gamil.com", 22);
 
-    System.out.println("transient entity");
-    System.out.println(student);
-    entityManager.persist(student);
+entityManager.persist(student);
+student.setFirstName("changed")
 
-    student.setFirstName("changed")
-    System.out.println("persisted entity");
-    System.out.println(student);
-
-    transaction.commit(); // explained later
-
-    entityManager.close();
-}
+transaction.commit(); // explained later
+entityManager.close(); // explained later
 ```
 
-Output:
+> Note: For the example provided in code block [333], it may be useful to ignore the EntityTransaction and EntityManager. As previously stated, it will be explained later. For now, it is not important.
 
-```text
-transient entity
-Student(id=1, firstName=first, lastName=second, email=example@gamil.com, age=22)
-persisted entity
-Student(id=1, firstName=changed, lastName=second, email=example@gamil.com, age=22)
-```
-
-TODO: show database output
+<img src="./images/persisted-entity.jpg"/>
 
 As demonstrated, once an entity has been persisted,
-any changes made to it afterwards will continue to be propagated to the database.
+any changes made to it afterwards will continue to be propagated to the database (until the transaction is commited).
 It does not need to be saved or persisted again for the updated values to be entered into the databse.
 
 ## 3. Detached
@@ -89,25 +71,20 @@ An Object becomes detached when the currently running Persistence Context is clo
 Any changes made to detached objects are no longer automatically propagated to the database.
 
 ```java
-public void testDetachedEntity(){
-    EntityTransaction transaction = entityManager.getTransaction(); // explained later
-    transaction.begin(); // explained later
+EntityTransaction transaction = entityManager.getTransaction(); // explained later
+transaction.begin(); // explained later
 
-    // creating a transient entity
-    Student student = new Student(null, "first", "second", "example@gamil.com", 22);
+Student student = new Student(null, "first", "second", "example@gamil.com", 22);
 
-    System.out.println("transient entity");
-    System.out.println(student);
-    entityManager.persist(student);
+entityManager.persist(student);
 
-    transaction.commit(); // explained later
+transaction.commit(); // explained later
+entityManager.close(); // explained later
 
-
-    student.setFirstName("changed")
-    System.out.println("detached entity");
-    System.out.println(student);
-}
+student.setFirstName("changed")
 ```
+
+<img src="./images/detached-entity.jpg"/>
 
 In the code [333], trying to change any values in the `student` object will not do anything to the record in the table, as the entity instance has already been detached after the transaction is comitted. Therefore...
 
@@ -116,6 +93,7 @@ In the code [333], trying to change any values in the `student` object will not 
 When a persisted entity is removed, it means that the entity will be taken out of the persistent context and, consequently, deleted from the database.
 
 ```java
+Long persistedId = 1L;
 Student student = entityManager.find(Student.class, persistedId);
 entityManager.remove(student);
 ```
