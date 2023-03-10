@@ -13,7 +13,7 @@
 
 - a set of entity instances, under the purview of an entity manager
 
-## EntityManagerFactor
+## EntityManagerFactory
 
 - creates entity managers based on the configuration specified in the persistence unit
 - the configurations will include datasource url, database drivers, etc

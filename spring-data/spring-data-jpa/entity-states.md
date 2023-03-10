@@ -93,9 +93,15 @@ In the code [333], trying to change any values in the `student` object will not 
 When a persisted entity is removed, it means that the entity will be taken out of the persistent context and, consequently, deleted from the database.
 
 ```java
+EntityTransaction transaction = entityManager.getTransaction(); // explained later
+transaction.begin(); // explained later
+
 Long persistedId = 1L;
 Student student = entityManager.find(Student.class, persistedId);
 entityManager.remove(student);
+
+transaction.commit(); // explained later
+entityManager.close(); // explained later
 ```
 
 ## Reference
