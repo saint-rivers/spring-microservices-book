@@ -45,16 +45,10 @@ An instance of an entity (or simply a object) in the "persistent" state represen
 A transient entity state can be changed to "persistent" by using the `persist()` method of the EntityManager.
 
 ```java
-EntityTransaction transaction = entityManager.getTransaction(); // explained later
-transaction.begin(); // explained later
-
 Student student = new Student(null, "first", "second", "example@gamil.com", 22);
 
 entityManager.persist(student);
 student.setFirstName("changed")
-
-transaction.commit(); // explained later
-entityManager.close(); // explained later
 ```
 
 > Note: For the example provided in code block [333], it may be useful to ignore the EntityTransaction and EntityManager. As previously stated, it will be explained later. For now, it is not important.
@@ -71,37 +65,26 @@ An Object becomes detached when the currently running Persistence Context is clo
 Any changes made to detached objects are no longer automatically propagated to the database.
 
 ```java
-EntityTransaction transaction = entityManager.getTransaction(); // explained later
-transaction.begin(); // explained later
-
 Student student = new Student(null, "first", "second", "example@gamil.com", 22);
 
 entityManager.persist(student);
-
-transaction.commit(); // explained later
-entityManager.close(); // explained later
+entityManager.detach(student);
 
 student.setFirstName("changed")
 ```
 
 <img src="./images/detached-entity.jpg"/>
 
-In the code [333], trying to change any values in the `student` object will not do anything to the record in the table, as the entity instance has already been detached after the transaction is comitted. Therefore...
+In the code [333], trying to change any values in the `student` object will not do anything to the record in the table, as the entity instance has already been detached.
 
 ## Removed
 
 When a persisted entity is removed, it means that the entity will be taken out of the persistent context and, consequently, deleted from the database.
 
 ```java
-EntityTransaction transaction = entityManager.getTransaction(); // explained later
-transaction.begin(); // explained later
-
 Long persistedId = 1L;
 Student student = entityManager.find(Student.class, persistedId);
 entityManager.remove(student);
-
-transaction.commit(); // explained later
-entityManager.close(); // explained later
 ```
 
 ## Reference

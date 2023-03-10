@@ -25,3 +25,9 @@ Hibernate is an implementation of the JPA specification.
 
 Hibernate provides HQL (Hibernate Query Language) which is an SQL inspired language for Java objects.
 HQL can be converted to native SQL for each database. So if you're using Postgres, Hibernate will convert any queries in your code to PostgreSQL. Doing this, keeps your code implementation database agnostic and will continue to work, even if the developer decide to switch databases after production, unless they explicitly wrote PostgreSQL code (for example) in their implementation.
+
+## [Entity](./entities.md)
+
+## [Entity States](./entity-states.md)
+
+## [Entity Manager](./entity-manager.md)
