@@ -35,8 +35,10 @@ Using the Student class created in section [222],
 we can create a student entity by creating an object with the new keyword.
 Because it is annotated with `@Entity` the created object will be managable by the EntityManager.
 
+Another characteristic of a transient entity is that its @Id annotated property must be null. Only then will the entity manager insert it as a new record. 
+
 ```java
-Student student = new Student();
+Student student = new Student(null, "first", "second", "example@gamil.com", 22);
 ```
 
 ## 2. Persistent
