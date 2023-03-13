@@ -2,20 +2,71 @@
 
 The EntityManager has been covered to some extent in sections [222] and [222], however, this section will focus on some basic CRUD operations with the EntityManager API. 
 
-For the following examples, the student entity instance below will be used.
+## Test Setup
+
+For the test, a repository bean in required to declare the CRUD methods. 
 
 ```java
-Student student = new Student(null, "Thomas", "Shelby", "thomas@gamil.com", 32);
+import jakarta.persistence.*;
+import jakarta.transaction.Transactional;
+import org.springframework.stereotype.Repository;
+
+@Repository
+public class StudentRepository {
+
+    @PersistentContext
+    private EntityManager entityManager;
+
+    // crud operations
+}
+```
+
+And for simplicity, the methods that will be created will be called from a Spring Boot Test. A simple Spring Boot Test can be created in the directory: `src/test/java/{groupId}/{artifactId}/`
+
+For the example below, it was created in the `src/test/java/com/testing/hibernatedemo` directory.
+
+```java
+import com.testing.hibernatedemo.student.Contact;
+import com.testing.hibernatedemo.student.Student;
+import com.testing.hibernatedemo.student.StudentRepositoryImpl;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+
+@SpringBootTest
+public class StudentRepositoryUnitTest {
+
+    @Autowired
+    private StudentRepository studentRepository;
+
+    // test methods here
+}
 ```
 
 ## Create using persist()
 
 To insert a new record into the database using the Entity Manager API, the persist() method is used and a transient entity (an entity with no ID) must be passed as an argument.
 
+Class: StudentRepository.java
+
 ```java
-System.out.println(student);
-entityManager.persist(student);
-System.out.println(student);
+@Transactional
+public void insertStudent(Student student){
+	entityManager.persist(student);
+}
+```
+
+Class: StudentRepositoryUnitTest.java
+
+```java
+@Test  
+void shouldInsertStudent() {  
+	Student student = new Student(null, "Thomas", "Shelby", "thomas@gamil.com", 32);
+	System.out.println(student);
+	Long id = studentRepository.insertStudent(student);  
+	System.out.println(student);
+	assert id == 1L;  
+}
 ```
 
 ```text
@@ -27,12 +78,29 @@ As seen in the demonstration in figure [222], after an entity has been persisted
 
 ## Read an entity by ID
 
-The Entity Manager API provides several overloaded find() methods to fetch an entity by its ID. This is the simplest way to fetch an entity, assuming a record with an ID of "1" exists.
+The Entity Manager API provides several overloaded find() methods to fetch an entity by its ID. This is the simplest way to fetch an entity, assuming the record exists.
+
+Class: StudentRepository.java
 
 ```java
-Long persistedId = 1L;
-Student fetchedStudent = entityManager.find(Student.class, persistedId);
-System.out.println(fetchedStudent);
+@Transactional
+public Student findByStudentId(Long studentId) {
+    Student fetchedStudent = entityManager.find(Student.class, studentId);
+    System.out.println(fetchedStudent);
+}
+```
+
+Class: StudentRepositoryUnitTest.java
+
+```java
+@Test  
+void shouldInsertStudent() {  
+	Student student = new Student(null, "Thomas", "Shelby", "thomas@gamil.com", 32);
+	studentRepository.insertStudent(student);  
+
+    student = studentRepository.findByStudentId(1L);
+    assert student.getFirstName().equals("Thomas");
+}
 ```
 
 ```text
@@ -43,6 +111,8 @@ Student(id=1, firstName=Thomas, lastName=Shelby, email=thomas@gmail.com, age=32)
 
 Another way to insert a record into the database is to use the merge() method. This method also takes a single argument, which is the entity to be inserted.
 
+Class: StudentRepository.java
+
 ```java
 System.out.println(student);
 entityManager.merge(student);
@@ -51,6 +121,8 @@ System.out.println(student);
 Student fetchedStudent = entityManager.find(Student.class, 1L);
 System.out.println(fetchedStudent);
 ```
+
+Class: StudentRepositoryUnitTest.java
 
 ```text
 Student(id=null, firstName=Thomas, lastName=Shelby, email=thomas@gmail.com, age=32)
@@ -102,30 +174,68 @@ Fetched: Student(id=1, firstName=Arthur, lastName=Shelby, email=thomas@gmail.com
 
 Another notable point about the find() method is that it returns a persisted entity. That means, the entity can simply be updated by first fetching the instance, then making any desired changes to it and committing it afterwards.
 
+Class: StudentRepository.java
+
 ```java
-Long persistedId = 1L;
-Student fetchedStudent = entityManager.find(Student.class, persistedId);
-fetchedStudent.setFirstName("John");
+@Transactional
+public void updateByStudentId(Long studentId){
+	Student fetchedStudent = entityManager.find(Student.class, studentId);
+	fetchedStudent.setFirstName("Polly");
+	fetchedStudent.setLastName("Gray");
+}
+```
+
+Class: StudentRepositoryUnitTest.java
+
+```java
+@Test  
+void shouldUpdateStudentInformation() {  
+	Student student = new Student(null, "Thomas", "Shelby", "thomas@gamil.com", 32);
+	
+	studentRepository.insertStudent(student);  
+    Student fetchedStudent = entityManager.find(Student.class, 1L);
+	System.out.println(fetchedStudent);
+
+    studentRepository.updateByStudentId(1L);
+    fetchedStudent = entityManager.find(Student.class, 1L);
+	System.out.println(fetchedStudent);
+}
 ```
 
 ```text
 Student(id=1, firstName=John, lastName=Shelby, email=thomas@gmail.com, age=32)
+Student(id=1, firstName=Polly, lastName=Gray, email=thomas@gmail.com, age=32)
 ```
 
 ### method 2
 
 Alternatively, creating a new transient entity, but setting the ID to an existing one, then merging or persisting it will also update the record by the specified ID.
 
+Class: StudentRepository.java
+
 ```java
-entityManager.persist(student); // persisting first entity
-student = entityManager.find(Student.class, 1L);
-System.out.println("Before update: " + student);
+@Transactional
+public void updateByStudentId(Long studentId){
+	Student updatedStudent = new Student(studentId, "Alfie", "Solomons", "alfie@gamil.com", 40);
+	entityManager.persist(updatedStudent);
+}
+```
 
-Student updatedStudent = new Student(1L, "Alfie", "Solomons", "alfie@gamil.com", 40);
+Class: StudentRepositoryUnitTest.java
 
-entityManager.persist(updatedStudent); // persisting second entity
-student = entityManager.find(Student.class, 1L);
-System.out.println("After update: " + student);
+```java
+@Test  
+void shouldUpdateStudentInformation() {  
+	Student student = new Student(null, "Thomas", "Shelby", "thomas@gamil.com", 32);
+	
+	studentRepository.insertStudent(student);  
+    Student fetchedStudent = entityManager.find(Student.class, 1L);
+	System.out.println(fetchedStudent);
+
+    studentRepository.updateByStudentId(1L);
+    fetchedStudent = entityManager.find(Student.class, 1L);
+	System.out.println(fetchedStudent);
+}
 ```
 
 ```text
@@ -137,14 +247,36 @@ Student(id=1, firstName=Alfie, lastName=Solomons, email=alfie@gmail.com, age=40)
 
 To perform deletion of an entity, use the remove() method to remove the entity from the persistence context and also delete the record from the database, while also making the instance ready for garbage collection.
 
+Class: StudentRepository.java
+
 ```java
-entityManager.persist(student); // persisting first entity
-student = entityManager.find(Student.class, 1L);
-System.out.println("Before update: " + student);
-
-Student updatedStudent = new Student(1L, "Alfie", "Solomons", "alfie@gamil.com", 40);
-
-entityManager.persist(updatedStudent); // persisting second entity
-student = entityManager.find(Student.class, 1L);
-System.out.println("After update: " + student);
+@Transactional
+public void deleteByStudentId(Long studentId) {
+	Student student = entityManager.find(Student.class, studentId)
+    entityManager.remove(student);
+}
 ```
+
+It is important to run the delete and the find method in different transactions. Otherwise, the deletion will not be propagated and the record will still be searchable.
+
+Class: StudentRepositoryUnitTest.java
+
+```java
+@Test  
+void shouldDeleteInsertedStudent() {  
+	Student student = new Student(null, "Thomas", "Shelby", "thomas@gamil.com", 32);
+	studentRepository.insertStudent(student);  
+
+    studentRepository.deleteByStudentId(1L);
+
+    student = studentRepository.findByStudentId(1L);
+    assert student == null;
+}
+```
+
+
+If not record is found with the given ID, it should return null, instead of throwing an exception.
+
+References: 
+
+https://www.javaguides.net/2018/12/jpa-crud-example.html
