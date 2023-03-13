@@ -28,7 +28,7 @@ Filename: `src/main/resources/persistence.xml`
 	    <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
         <properties>
             <property name="javax.persistence.jdbc.url"
-			          value="jdbc:h2:mem:bookstore" />
+			          value="jdbc:h2:mem:studentmanagement" />
             <property name="javax.persistence.jdbc.user" value="sa" />
             <property name="javax.persistence.jdbc.password" value="" />
             <property name="javax.persistence.jdbc.driver" value="org.h2.Driver" />
