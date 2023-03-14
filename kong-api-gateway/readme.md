@@ -82,3 +82,7 @@ If you have a project with a larger scope, it might be beneficial to use Kong fo
 ## [KONG Anatomy](./kong-anatomy.md)
 
 ## [Deploying KONG](./deploying-kong.md)
+
+## [KONGA](./konga.md)
+
+## [Declarative Kong](./declarative-kong.md)
