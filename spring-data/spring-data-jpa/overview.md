@@ -33,3 +33,7 @@ HQL can be converted to native SQL for each database. So if you're using Postgre
 ## [Entity States](./entity-states.md)
 
 ## [Entity Manager](./entity-manager.md)
+
+## [Entity Manager Factory](./entity-manager-factory.md)
+
+## [Entity Manager API](./entity-manager-api.md)
