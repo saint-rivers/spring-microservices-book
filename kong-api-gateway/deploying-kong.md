@@ -78,6 +78,59 @@ docker run -d --name kong-gateway \
   kong/kong-gateway:3.2.1.0
 ```
 
+Here's the docker-compose file
+
+
+```yaml
+version: "3.8"
+
+services:
+  kong-database:
+    container_name: kong-database
+    image: postgres:14.4-alpine
+    environment:
+      POSTGRES_USER: kong
+      POSTGRES_DB: kong
+      POSTGRES_PASSWORD: kongpass
+    ports:
+      - "5432:5432"
+
+  kong-migration:
+    container_name: kong-migration
+    image: kong:3.0.0-alpine
+    environment:
+      KONG_DATABASE: postgres
+      KONG_PG_HOST: kong-database
+      KONG_PG_PASSWORD: kongpass
+      KONG_PASSWORD: test
+    depends_on:
+      - kong-database
+    restart: on-failure
+    entrypoint:
+      - "kong"
+      - "migrations"
+      - "bootstrap"
+
+  kong-gateway:
+    container_name: kong-gateway
+    image: kong:3.0.0-alpine
+    environment:
+      KONG_DATABASE: postgres
+      KONG_PG_HOST: kong-database
+      KONG_PG_USER: kong
+      KONG_PG_PASSWORD: kongpass
+      KONG_ADMIN_LISTEN: 0.0.0.0:8001
+    depends_on:
+      - kong-database
+      - kong-migration
+    restart: on-failure
+    ports:
+      - "8000:8000"
+      - "8001:8001"
+      - "8443:8443"
+      - "8444:8444"
+```
+
 # Option 2: Deploying with Docker Compose
 
 Similar to the method above, in a docker-compose file.
@@ -88,9 +141,9 @@ This might be a little confusing, so I’d recommend creating your own docker-co
 
 For this demo, we have 3 containers running: kong-database, kong-gateway and our task-service Spring Boot API from our previous lesson.
 
-| Key | Value |
-| --- | --- |
-| Kong Admin URL | http://localhost:8001 |
+| Key               | Value                  |
+| ----------------- | ---------------------- |
+| Kong Admin URL    | http://localhost:8001  |
 | Task Service Host | http://taskservice.com |
 
 # Creating a Kong Service
@@ -126,9 +179,9 @@ After creating a service, we can then create a route that will point to that ser
 
 We can discuss `strip_path` in a later section.
 
-http://localhost:8000/                             ->         http://110.74.194.123:6072/
+http://localhost:8000/ -> http://110.74.194.123:6072/
 
-http://localhost:8000/api/v1/tasks         ->         http://110.74.194.123:6072/api/v1/tasks
+http://localhost:8000/api/v1/tasks -> http://110.74.194.123:6072/api/v1/tasks
 
 # Testing Our Configuration
 
@@ -173,6 +226,6 @@ curl -i -X POST \
 
 Because we’ve set `paths[]=/task-service`, and `strip_path=true` by default, our route would look like this.
 
-http://localhost:8000/***task-service***/api/v1/tasks      ->      http://110.74.194.123:6072/api/v1/tasks
+http://localhost:8000/**_task-service_**/api/v1/tasks -> http://110.74.194.123:6072/api/v1/tasks
 
 You can conclude that `strip_path` cuts out or removes the path (`/task-service`) from the route and what is remaining is sent to the upstream server.
